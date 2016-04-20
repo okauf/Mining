@@ -1,0 +1,3 @@
+# Mining
+
+new readme
