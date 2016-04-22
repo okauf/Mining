@@ -1,18 +1,27 @@
-function [ alpha, l, pos_load ] = ExcavatorConfig( rope1, rope2, params )
+function [ alpha, l, pos_load ] = ExcavatorConfig( lr1, lr2, params )
 % given: rope length of pulleys
 % computation of configuration of excavator
 
-l = rope2 - params.l1;
+l = lr2 - params.l1;
 
-alpha = acos((params.l2^2+(rope1-params.l3)^2-(l+params.l5)^2)/2*params.l2*(rope1-params.l3));
+% alpha = acos((params.l2^2+(rope1-params.l3)^2-(l+params.l5)^2)/2*params.l2*(rope1-params.l3));
+alpha = acos(-((lr2-params.l1+params.l5)^2-params.l2^2-(lr1-params.l3)^2)/(2*params.l2*(lr1-params.l3)));
 
-%angle between excavator arms
-beta = pi/2 - alpha + ...
-    acos(-((rope1-params.l3-cos(alpha)*params.l2)^2-sin(alpha)^2*params.l2^2-(l+params.l5)^2)/(2*(l+params.l5)*sin(alpha)*params.l2));
+MP = [cos(params.ang_base);sin(params.ang_base)]*params.l3;
 
-pos_load = (l+params.l5)*[cos(pi-beta);sin(pi-beta)] + params.l1*[cos(alpha);sin(alpha)];
+if abs(alpha + params.ang_base - pi/2) > 1e-6
 
-% pos_load = (rope1-params.l3)*[cos(alpha);sin(alpha)] + params.l3*[cos(params.ang_base);sin(params.ang_base)];
+    if params.ang_base + alpha > pi/2
+        phi = alpha-pi/2+params.ang_base;
+        pos_load = MP + [sin(phi);-cos(phi)]*(lr1-params.l3); %% rechts
+    else
+        phi = pi/2-alpha-params.ang_base;
+        pos_load = MP - [sin(phi);cos(phi)]*(lr1-params.l3); %%links
+    end
+
+else
+    pos_load = MP + [0;-lr1+params.l3]; %% senkrecht runter
+end
 
 end
 

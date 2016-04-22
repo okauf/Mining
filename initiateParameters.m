@@ -1,3 +1,5 @@
+% initiation of model parameters
+
 
 clear params;
 
@@ -11,7 +13,8 @@ params.l4 = 10; %length of movable excavator arm
 params.l5 = 5; %length from shovel to attachment point of blue pulley
 
 % [kg]
-params.w = 10; % weight of load
+params.m = 10; % mass of load
+params.F = params.m *9.81; % weight
 
 params.ang_base = 1/4*pi;
 
