@@ -19,13 +19,21 @@ params.F = params.m *9.81; % weight
 params.ang_base = 1/4*pi;
 
 % startung lengths of the ropes
-params.lr10 = 20;
-params.lr20 = 13;
+params.lr10_start = 20;
+params.lr20_start = 13;
 
 % [N]
 params.Fr10 = 0;
 params.Fr = @(t) params.Fr10 + t*0.2;
 
 % starting diameter of steel ropes
-params.d0 = 0.05;
-params.A0 = pi/4*d0^2;
+params.d10 = 0.05;
+params.d20 = 0.05;
+params.A0 = pi/4*params.d10^2;
+
+params.E_c = 0.2;
+params.mu_c = 0.15;
+
+params.r = 0.05;
+params.I = 2;
+params.F_c = 2;
