@@ -32,3 +32,6 @@ params.A0 = pi/4*params.d0^2;
 
 % modulus of elasticity of steel [N/m²]
 params.E_c = 210*10^9;
+
+% poisson's ratio for steel [1]
+params.mu_c = 0.28;
