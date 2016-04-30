@@ -30,6 +30,15 @@ params.Fr = @(t) params.Fr10 + t*0.2;
 params.d0 = 0.05;
 params.A0 = pi/4*params.d0^2;
 
+% propertis of the cable reels
+params.r_cr = 0.20;                          % [m] radius of cable reel
+params.h_cr = 0.15;                          % [m] height of cable reel
+params.rho_cr = 7860;                        % [kg/m³] density of steel 
+params.V_cr = pi*params.r_cr^2*params.h_cr;  % [m³] volume of cable reel
+params.m_cr = params.rho_cr*params.V_cr;     % [kg] mass of cable reel
+params.I_cr = 1/12*params.m_cr*(3*params.r_cr^2+params.h_cr^2);   % [kgm²]inertia of cable ree
+
+
 % modulus of elasticity of steel [N/m²]
 params.E_c = 210*10^9;
 

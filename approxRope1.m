@@ -1,4 +1,4 @@
-function [ lr1 ] = approx_rope1(params, lr1, lr10)
+function [ lr1 ] = approxRope1(params, lr1, lr10)
 % ROPE1 Approximate length of the stretched rope 1
 %   Input:
 %       params      Fixed parameters of the excavator model
@@ -58,16 +58,6 @@ lr1 = double(solve([eq1,eq2],lr1_sol));
 
 
 
-% The rest is only needed, if one assumes no stretching of the diameter
-%{
-% tensile stress. [N/m²]
-% instead of using the area after the stretching, use the initial area
-sigma1 = F1/params.A0;
-% extensin [1]
-eps1 = sigma1/params.E_c;
-lr1 = params.lr10*(eps1 + 1);
-%}
-
 %{
 disp(['alpha_a   ',num2str(alpha_a*180/pi)])
 disp(['beta_a    ',num2str(beta_a*180/pi)])
@@ -80,14 +70,6 @@ disp(['eps1      ',num2str(eps1)])
 disp(['lr1       ',num2str(lr1)])
 %}
 
-%{
-% No feedback loop, so following equations were not used as usually
-A1 = pi/4*d1^2;
-eps1 = (lr1-lr10)/lr10;
-E_c = sigma1/eps1;
-epsq1 = (d1-d10)/d10;
-mu = epsq1/eps1;
-%}
 
 end
 

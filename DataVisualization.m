@@ -1,7 +1,7 @@
-function [ ] = DataVisualization(params, lr1) %rope1, rope2,
+function [ ] = DataVisualization(params, lr1, lr2) %rope1, rope2,
 
-lr2 = @(t) params.lr20;
-lr2 = params.lr20*ones(length(lr1),1);
+%lr2 = @(t) params.lr20;
+%lr2 = params.lr20*ones(length(lr1),1);
 
 figure(1);
 numframes=length(lr1);
@@ -25,9 +25,18 @@ for i=1:numframes
     subplot(1,2,2);
     hold on;
     axis equal;
-    axis([0,15,0,15]);
+    axis([0,20,0,20]);
+    % rope 1, base to top pulley to load position
     plot([0,params.l3*cos(params.ang_base),pos_load(1)],[0,params.l3*sin(params.ang_base),pos_load(2)],'linewidth',1.5);
-    plot([params.l1*cos(params.ang_base),pos_load(1)],[params.l1*sin(params.ang_base),pos_load(2)],'linewidth',1.5);
+    % sidearm, stops at base arm
+    %plot([params.l1*cos(params.ang_base),pos_load(1)],[params.l1*sin(params.ang_base),pos_load(2)],'linewidth',1.5);
+
+    % sidearm
+    BC_vect = [params.l1*cos(params.ang_base) - pos_load(1);
+               params.l1*sin(params.ang_base) - pos_load(2)];
+    Z = params.l4*BC_vect/norm(BC_vect) + [pos_load(1); pos_load(2)];   % upper endpoint of sidearm
+    plot([Z(1),pos_load(1)],[Z(2),pos_load(2)],'linewidth',1.5);
+    
     
     A(:,i)=getframe(gcf);
     clf;
