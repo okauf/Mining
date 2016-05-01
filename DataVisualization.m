@@ -1,4 +1,4 @@
-function [ ] = DataVisualization(params, lr1, lr2) %rope1, rope2,
+function [ A ] = DataVisualization(params, lr1, lr2) %rope1, rope2,
 
 %lr2 = @(t) params.lr20;
 %lr2 = params.lr20*ones(length(lr1),1);
@@ -25,7 +25,7 @@ for i=1:numframes
     subplot(1,2,2);
     hold on;
     axis equal;
-    axis([0,20,0,20]);
+    axis([0,15,0,30]);
     % rope 1, base to top pulley to load position
     plot([0,params.l3*cos(params.ang_base),pos_load(1)],[0,params.l3*sin(params.ang_base),pos_load(2)],'linewidth',1.5);
     % sidearm, stops at base arm
@@ -41,6 +41,8 @@ for i=1:numframes
     A(:,i)=getframe(gcf);
     clf;
 end
+
+axes('pos',[0 0 1 1],'visible','off');
 movie(A,1,2) % Play the MATLAB movie
 % save movie.mat A % save the MATLAB movie to a file
 % mpgwrite(A,jet,'movie.mpg'); % Convert the movie to MPEG format
