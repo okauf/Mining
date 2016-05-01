@@ -1,9 +1,10 @@
-function [lr1, lr2, sol] = strTwo(params, tau_p1, tau_p2)
+function [lr1, lr2, sol] = strTwo(params, tau_p1, tau_p2, tspan)
 % Compute stretched rope length for movement with two pulleys.
 %   Input:
 %       params      fix parameters of the model
 %       tau_p1      torque of pulley 1
 %       tau_p2      torque of pulley 2
+%       tspan       time span of movement
 %   Output:
 %       lr1         stretched length of rope 1
 %       lr2         stretched length of rope 2
@@ -14,7 +15,6 @@ function [lr1, lr2, sol] = strTwo(params, tau_p1, tau_p2)
 % ODE for the unstretched rope lengths depending on the torques
 % x represents [lr1,omega1,lr2,omega2] = [lr1,ω₁,lr2,ω₂]
 % u represents [tau_p1,tau_p2] = [τ₁,τ₂]
-t_int = [0 10];                             % time interval
 x_0 = [params.lr10 0 params.lr20 0];        % start values of state variables
 
 % ODE:
@@ -27,7 +27,7 @@ rhs = @(t,x,u) [params.r_cr*x(2);
                 params.r_cr*x(4);
                 u(2)/params.I_cr];
 
-sol = ode45( @(t,x) rhs(t,x,[tau_p1(t),tau_p2(t)]), t_int, x_0);
+sol = ode45( @(t,x) rhs(t,x,[tau_p1(t),tau_p2(t)]), tspan, x_0);
 
 %{
 % The unstretched lenght is calculated

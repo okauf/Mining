@@ -12,6 +12,7 @@ for i=1:numframes
     
     % plot of rope length
     subplot(1,2,1)
+    set(gca,'XTick',[]);    % hide axis numbers
     
     hold on;
     %fplot(lr1,[1,10]);
@@ -25,7 +26,10 @@ for i=1:numframes
     subplot(1,2,2);
     hold on;
     axis equal;
-    axis([0,15,0,30]);
+    %axis([0,15,0,30]);
+    axis([0,15,0,15]);
+    set(gca,'XTick',[]);    % hide axis numbers
+    set(gca,'YTick',[]);
     % rope 1, base to top pulley to load position
     plot([0,params.l3*cos(params.ang_base),pos_load(1)],[0,params.l3*sin(params.ang_base),pos_load(2)],'linewidth',1.5);
     % sidearm, stops at base arm
