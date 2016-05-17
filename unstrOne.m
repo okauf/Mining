@@ -4,7 +4,7 @@ h_cr = 0.15;    % height of cable reel
 rho_cr = 7860;  % [kg/m³] density of steel for cable reel
 V_cr = pi*r_cr^2*h_cr;  % volume of cable reel
 m_cr = rho_cr*V_cr;     % mass of cable reel
-I_cr = 1/12*m_cr*(3*r_cr^2+h_cr^2)       % inertia of cable reel
+I_cr = 1/12*m_cr*(3*r_cr^2+h_cr^2);       % inertia of cable reel
 
 % torque of pulley 1
 tau_p1  = @(t) I_cr*sin(t);
