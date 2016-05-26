@@ -16,9 +16,12 @@ t_span = [0,1];
 
 % torques
 k = 1500;   % fixed, such that the system barely moves
-tau_P1 = @(t) -k;
-tau_P2 = @(t) -k;
-
+%tau_P1 = @(t) -k;
+%tau_P2 = @(t) -k;
+%tau_P1 = @(t) -k*([t<0.2*pi]*sin(t) - [t>=0.5 && t<0.8]*(t-0.5) + [t>=0.8]*1);
+%tau_P2 = @(t) -k*([t<0.2*pi]*sin(t) - [t>=0.5 && t<0.8]*(t-0.5) + [t>=0.8]*1);
+tau_P1 = @(t) -k - 30*k*t;
+tau_P2 = @(t) -k - k*t;
 
 % From Langrangean formalism:
 % A * [sdd; thetadd] = b

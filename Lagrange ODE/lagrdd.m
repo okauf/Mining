@@ -30,7 +30,7 @@ function y = A_inv_b_fct(x,u)
     matA = [params.M1 + params.M2 + params.I_B2/params.r_B2^2 + params.I_P2/params.r_P2^2 + 0.5*(params.I_B1/params.r_B1^2 + params.I_P1/params.r_P1^2)*a_s, ...
             0.5*(params.I_B1/params.r_B1^2 + params.I_P1/params.r_P1^2)*b_s;
             0.5*(params.I_B1/params.r_B1^2 + params.I_P1/params.r_P1^2)*a_theta, ...
-            params.M1*(x(1) + params.l5)^2 + params.M2*(0.25*params.r_M2^2 + 1/12*params.l4^2 + 2*(x(1) + params.l5 - params.l4/2))^2 + 0.5*(params.I_B1/params.r_B1^2 + params.I_P1/params.r_P1^2)];
+            params.M1*(x(1) + params.l5)^2 + params.M2*(0.25*params.r_M2^2 + 1/12*params.l4^2 + 2*(x(1) + params.l5 - params.l4/2))^2 + 0.5*(params.I_B1/params.r_B1^2 + params.I_P1/params.r_P1^2)*b_theta];
 
 
     % Calculate vector b of the equation
@@ -38,9 +38,8 @@ function y = A_inv_b_fct(x,u)
     bVec = [Q_s + dTds - dVds ...
                 - 0.5*(params.I_B1/params.r_B1^2 + params.I_P1/params.r_P1^2)*c_s;
             Q_theta + dTdtheta - dVdtheta ...
-                - (2*params.M1*(x(1) + params.l5)^2 + 4*params.M2*( x(1) + params.l5 - 0.5*params.l4))*x(3)*x(4) ...
+                - (2*params.M1*(x(1) + params.l5) + 4*params.M2*( x(1) + params.l5 - 0.5*params.l4))*x(3)*x(4) ...
                 - 0.5*(params.I_B1/params.r_B1^2 + params.I_P1/params.r_P1^2)*c_theta];
-
 
     y = linsolve( matA, bVec );
 
