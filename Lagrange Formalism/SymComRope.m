@@ -1,4 +1,4 @@
-function [ grads, gradt, gradsd, gradtd] = SymComRope( params )
+function [ grads, gradt, Der_gradsd, Der_gradtd] = SymComRope( params )
 
 syms s theta sd thetad
 
@@ -14,9 +14,19 @@ grads = diff(l_r1d^2,s);
 
 gradt = diff(l_r1d^2,theta);
 
-gradsd = diff(l_r1d^2,sd);
+% gradsd = diff(l_r1d^2,sd);
 
-gradtd = diff(l_r1d^2,thetad);
+gradsd = (2*(sd + 5*thetad*sin(theta - pi/4))*((sd*(2*s + 10))/2 - 5*sd*cos(theta - pi/4) + 5*thetad*sin(theta - pi/4)*(s + 5)))/((s + 5)^2 - cos(theta - pi/4)*(10*s + 50) + 25) - ((2*s - 10*cos(theta - pi/4) + 10)*((sd*(2*s + 10))/2 - 5*sd*cos(theta - pi/4) + 5*thetad*sin(theta - pi/4)*(s + 5))^2)/((s + 5)^2 - cos(theta - pi/4)*(10*s + 50) + 25)^2;
+ 
+% manually determined: Derivative of gradsd wrt t
+Der_gradsd = [];
+
+% gradtd = diff(l_r1d^2,thetad);
+
+gradtd = (10*sin(theta - pi/4)*(s + 5)*((sd*(2*s + 10))/2 - 5*sd*cos(theta - pi/4) + 5*thetad*sin(theta - pi/4)*(s + 5)))/((s + 5)^2 - cos(theta - pi/4)*(10*s + 50) + 25);
+ 
+% manually determined: Derivative of gradtd wrt t
+Der_gradtd = [];
 
 end
 
