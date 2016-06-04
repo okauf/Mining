@@ -2,7 +2,7 @@
 % Comparison of implemented derivatives with derivatives calculated using
 % the symbolic toolbox (apart from derivatives wrt time)
  
-syms s theta sd thetad sdd thetadd
+syms s(t) theta(t) sd(t) thetad(t) sdd(t) thetadd(t)
 
 [ dlr1d2ds, dlr1d2dtheta, Der_dlr1d2dsd, Der_dlr1d2dthetad ] = DerRopeLength( params, s, theta, sd, thetad, sdd, thetadd );
 

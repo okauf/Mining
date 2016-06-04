@@ -61,7 +61,14 @@ c_theta = ((-4*(s+params.l5)*sd^2*params.l2 * sin(phi-theta) ...
     - 2*params.l2*thetad*(s+params.l5) * sin(phi-theta))) / N^2;
 
 %Derivative of dot(lr1)^2 wrt dot(theta) and t
-Der_dlr1d2dthetad = a_theta * sdd + b_theta * thetadd + c_theta;
+% Der_dlr1d2dthetad = a_theta * sdd + b_theta * thetadd + c_theta;
+
+
+% Der_dlr1d2dthetad = -(((params.l2*sd*sin(phi - theta) - params.l2*thetad*cos(phi - theta)*(params.l5 + s))*(2*params.l2*(sd*cos(phi - theta) + thetad*sin(phi - theta)*(params.l5 + s)) - sd*(2*params.l5 + 2*s)) - params.l2*sin(phi - theta)*(params.l5 + s)*(sdd*(2*params.l5 + 2*s) - 2*params.l2*(- cos(phi - theta)*(params.l5 + s)*thetad^2 + 2*sd*sin(phi - theta)*thetad + sdd*cos(phi - theta) + thetadd*sin(phi - theta)*(params.l5 + s)) + 2*sd^2))*((params.l5 + s)^2 + params.l2^2 - 2*params.l2*cos(phi - theta)*(params.l5 + s)) - params.l2*sin(phi - theta)*(params.l5 + s)*(2*params.l2*(sd*cos(phi - theta) + thetad*sin(phi - theta)*(params.l5 + s)) + sd*(2*params.l5 - 2*s))*(sd*(2*params.l5 + 2*s) - 2*params.l2*sd*cos(phi - theta) + 2*params.l2*thetad*sin(phi - theta)*(params.l5 - s)))/((params.l5 + s)^2 + params.l2^2 - 2*params.l2*cos(phi - theta)*(params.l5 + s))^2;
+ 
+l2 = params.l2; l5 = params.l5;
+Der_dlr1d2dthetad = (l2*sin(theta - phi)*(l5 + s)*(2*sd*(l5 + s) - 2*l2*sd*cos(theta - phi) + 2*l2*thetad*sin(theta - phi)*(l5 + s)))/((l5 + s)^2 + l2^2 - 2*l2*cos(theta - phi)*(l5 + s));
+ 
 
 end
 
