@@ -24,8 +24,8 @@ params.r_P1 = 0.20;
 params.r_P2 = 0.20;
 
 % thickness
-params.h_B1 = 0.15;
-params.h_B2 = 0.15;
+params.h_B1 = 0.5;
+params.h_B2 = 0.5;
 params.h_P1 = 0.15;
 params.h_P2 = 0.15;
 
@@ -54,7 +54,7 @@ params.I_B2 = 0.5*7860*pi*params.h_B2*params.r_B2^4;
 params.I_P1 = 0.5*7860*pi*params.h_P1*params.r_P1^4;
 params.I_P2 = 0.5*7860*pi*params.h_P2*params.r_P2^4;
 
-params.mu_B1 = 0.2;
-params.mu_B2 = 0.2;
-params.mu_P1 = 0.2;
-params.mu_P2 = 0.2;
+params.mu_B1 = 10000;
+params.mu_B2 = 10000;
+params.mu_P1 = 1000;
+params.mu_P2 = 1000;
