@@ -1,13 +1,26 @@
-% Create instance for optimization
+function [ objFct ] = exampleConf1(params, N, rkOrder)
+% Example configuration 1
+% Input:
+%   params      optimal parameters
+%   N           number of time steps in discretization
+%   rkOrder     index of used Runge Kutta method
+%               1: explicit Euler
+%               2: RK of 2nd order
+%               3: RK of 3nd order / Simpson's rule
+%               4: RK of 4nd order
+% Output:
+%   objFct      objective function for this problem
+%
+% The parameters come from initiateParameters and are thus fixed
+
 
 %%%%%
 % Set up fixed values of the system
 %%%%%
 
-initiateParameters;
-
 % actual parameters, corresponding to the actual state
 p_opt = pFromParams(params);
+fix_params = nonOptParams(params);
 
 %%
 % ODE is to be solved on the intervall [0,T]
@@ -58,7 +71,6 @@ tau_B2 = piecwConst(u2,T);
 % time points for discretization:
 % t_pts = [0=t_0,t_1,...,t_N=T] = [0,T/N,2T/N,...,(N-1)T/N,T]
 % mesh = [t_1-t_0,t_2-t_1,...,t_N-t_{N-1}] = [T/N,...,T/N]
-N = 100;                  % number of time steps
 t_pts = (0:N)*T/N;       % time points of discretization
 mesh = ones(1,N)*T/N;    % time steps of discretization
 
@@ -78,23 +90,11 @@ u = [tau_B1_val(:)';
      tau_B2_val(:)'];
 
 
-
-%%%%%
-% Set up the Optimization Problem
-%%%%%
-
-%%
-% Choose initial values for the parameters
-% They differ from the real, unknown parameters
-% p_0 = [M1,M2,I_B1,I_B2,I_P1,I_P2,mu_B1,mu_B2,mu_P1,mu_P2]
-p_0 = ones(10,1);   %%%
-fix_params = nonOptParams(params);
-
 %%
 % Approximation function
 % calculate state approximation depending on the parameters
 % choose from explicit Euler, RK order 2, 3 and 4 with index 1/2/3/4
-approxFct = chooseApprox(fix_params,x_opt,u,mesh,1);
+approxFct = chooseApprox(fix_params,x_opt,u,mesh,rkOrder);
 
 %%
 % Objective function of tracking type
@@ -105,58 +105,6 @@ approxFct = chooseApprox(fix_params,x_opt,u,mesh,1);
 % use |x(p_opt) - x(p)| as the difference of the approximations
 objFct = trackingTypeFct(approxFct(p_opt), approxFct);
 
-%%
-% Constraint
-% Non-negativity lower bound for parameters
-lb = zeros(size(p_0));
 
-%{
-%%
-% Gradient of objective functin w.r.t. p
-% Calculate derivatives w.r.t. p
-% Do this by symbolically deriving the objective function
 
-syms p1 p2 p3 p4 p5 p6 p7 p8 p9 p10;
-p_sym = [ p1, p2, p3, p4, p5, p6, p7, p8, p9, p10];
-
-% approximation function useable for symbolics
-approxFctSym = explEulerApproxSym(fix_params,x_opt,u,mesh);
-
-% objective function useable for symbolics
-objFctSym = trackingTypeFct(x_opt, approxFctSym);
-
-% evaluate objective function at symbolic p
-y_sym = objFctSym(p_sym);
-
-% calculate derivative w.r.t. every symbolic parameter
-for i=1:length(p_sym)
-    yd_sym(i) = diff(y_sym,p_sym(i));
 end
-
-% Gradient function of the objective
-objGrad = @(p) double(subs(yd_sym(:),p_sym(:),p(:)));
-
-% For optimizatoin, objective and gradient
-% It evaluates p and returns the objective function,
-% and if requested also return the gradient.
-objWithGrad = getObjWithGrad(objFct,objGrad);
-
-
-%%%%%
-% Solve the Optimization Problem
-%%%%%
-
-
-%%
-tic;
-options                 = optimoptions('fmincon');
-options.Display         = 'iter';
-options.SpecifyObjectiveGradient = true;
-% options.GradObj         = 'on';
-% options.GradConstr      = 'on';
-% options.Hessian         = 'user-supplied';
-% options.HessFcn         = @hessianMap;
-
-p = fmincon(objWithGrad,p_0,[],[],[],[],lb,[],[], options);
-toc;
-%}

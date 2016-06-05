@@ -19,13 +19,15 @@ N = length(mesh)+1;
         %     theta1,   theta2,     theta3, ...;
         %     sd1,      sd2,        sd3,    ...;
         %     thetad1,  thetad2,    thetad3,...];
-        x = zeros(4,N);
-        x(:,1) = x_opt(:,1);    % initial value is the same
+        %x = zeros(4,N);
+        %x(:,1) = x_opt(:,1);    % initial value is the same
+        x(:,1) = p(1:4); % for symbolic make it useable
 
         for i = 1:(N-1)
             rhs     = rhsODE(x_opt(:,i),u(:,i),params);
             x(:,i+1)  = x_opt(:,i) + mesh(i)*rhs;
         end
+        x(:,1) = x_opt(:,1);    % rewrite with actual value
     end
 
 approxFct = @(p) explEuler(p);
