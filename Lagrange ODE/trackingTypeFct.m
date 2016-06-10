@@ -6,12 +6,13 @@ function trckFct = trackingTypeFct(x_opt, approxFct)
 % Output:
 %   trckFct     function to calculate z =  0.5|| x_opt - approxFct(p) ||
 
+
     function [ z, z_dp ] = trackingType(p)
         % Tracking type objective function, with derivative if requested
         % z     = 1/2 |x_opt - x(p)|^2
         % z_dp  = -(x_opt - x(p)'*x_dp
 
-        if nargout == 1
+        if nargout < 2
             x = approxFct(p);
             % x is of size 4xN
             z = 0.5*norm(x_opt(1,:) - x(1,:),2)^2 + ...
@@ -20,7 +21,7 @@ function trckFct = trackingTypeFct(x_opt, approxFct)
                 0.5*norm(x_opt(4,:) - x(4,:),2)^2;
         end
 
-        if nargout > 1
+        if nargout >= 2
             [x,x_dp] = approxFct(p);
             % x    is of size 4xN
             % x_dp is of size 4xNx10

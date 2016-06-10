@@ -85,7 +85,7 @@ function y_dp = A_inv_b_dp_fct(x,u)
     % b has mostly the same structure,
     % only M1, M2, I_B1 and I_P1 have additional terms
     bVec_dp = [Q_s_dp(:)' + dTds_dp(:)' - dVds_dp(:)';
-                    Q_theta_dp(:)' + dTdtheta_dp(:)' - dVds_dp(:)'];
+                    Q_theta_dp(:)' + dTdtheta_dp(:)' - dVdtheta_dp(:)'];
 
     % M1 addition
     bVec_dp(:,1) = bVec_dp(:,1) + [ 0;
@@ -97,18 +97,24 @@ function y_dp = A_inv_b_dp_fct(x,u)
     bVec_dp(:,3) = bVec_dp(:,3) + [ -c_s/(2*params.r_B1^2);
                                     -c_theta/(2*params.r_B1^2)];
     % I_P1 addition
-    bVec_dp(:,4) = bVec_dp(:,4) + [ -c_s/(2*params.r_P1^2);
+    bVec_dp(:,5) = bVec_dp(:,5) + [ -c_s/(2*params.r_P1^2);
                                     -c_theta/(2*params.r_P1^2)];
 
     %%
     % Calculate dy/dpk as solution of
     %   A*dy/dpk = db/dpk - dA/dpk*y
     % Maybe only one big linear equation? %%%%%
+    currMat = zeros(2,10);
+    for k=1:10
+        currMat(:,k) = matA_dp(:,:,k)*y;
+    end
+    y_dp = linsolve(matA, bVec_dp - currMat);
+    %{
     y_dp = zeros(2,10);
     for k=1:10
         y_dp(:,k) = linsolve( matA, bVec_dp(:,k) - matA_dp(:,:,k)*y);
     end
-
+    %}
 
 end
 

@@ -32,7 +32,7 @@ dTds_dp(1:5) = [ thetad^2*(s + params.l5);
                  2*thetad^2*(s + params.l5 - 0.5*params.l4);
                  dlr1d2ds/(2*params.r_B1^2);
                  0;
-                 dlr1d2ds/(2*params.r_P1)];
+                 dlr1d2ds/(2*params.r_P1^2)];
 
 % dVds only depends on M1 and M2
 dVds_dp = zeros(10,1);
