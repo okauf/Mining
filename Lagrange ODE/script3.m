@@ -123,15 +123,18 @@ p_sym = [ p1, p2, p3, p4, p5, p6, p7, p8, p9, p10];
 approxFctSym = explEulerApproxSym(fix_params,x_opt,u,mesh);
 
 % objective function useable for symbolics
-objFctSym = trackingTypeFct(x_opt, approxFctSym);
+objFctSym = trackingTypeFct(approxFctSym(p_opt), approxFctSym);
 
 % evaluate objective function at symbolic p
 y_sym = objFctSym(p_sym);
+y_sym = simplify(y_sym);
 
 % calculate derivative w.r.t. every symbolic parameter
 for i=1:length(p_sym)
     yd_sym(i) = diff(y_sym,p_sym(i));
 end
+
+yd_sym = simplify(yd_sym);
 
 % Gradient function of the objective
 objGrad = @(p) double(subs(yd_sym(:),p_sym(:),p(:)));

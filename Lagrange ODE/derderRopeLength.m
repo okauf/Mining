@@ -6,7 +6,7 @@ function [a_s,b_s,c_s,a_theta,b_theta,c_theta] = derderRopeLength(params, s, the
 % Der_dlr1d2dthetad = a_theta*sdd + b_theta*thetadd + c_theta
 
 phi = params.ang_base;
-N = params.l2^2 + (s+params.l5)^2 - 2*params.l2*(s+params.l5)*cos(phi-theta);
+N = params.l2^2 + (s+params.l5)^2 - 2*params.l2*(s+params.l5) * cos(phi-theta);
 
 a_s = (2*(s+params.l5)^2 - 4*(s+params.l5)*params.l2 * cos(phi-theta) + 2*params.l2^2 * cos(phi-theta)^2) / N;
 
@@ -26,6 +26,7 @@ c_s = ((4* sd^2*(s+params.l5) - 4*sd^2*params.l2 * cos(phi-theta) - ...
     params.l2*(s+params.l5) * sin(phi-theta))) / N^2;
 
 
+
 a_theta = (-2*(s+params.l5)^2 * sin(phi-theta) + 2*params.l2^2*(s+params.l5) * ...
     cos(phi-theta) * sin(phi-theta)) / N;
 
@@ -41,6 +42,7 @@ c_theta = ((-4*(s+params.l5)*sd^2*params.l2 * sin(phi-theta) ...
     cos(phi-theta) * sin(phi-theta) + 2*params.l2^2*(s+params.l5)^2 * thetad * sin(phi-theta)^2) * ...
     (2*(s+params.l5)* sd - 2*params.l2*sd * cos(phi-theta) ...
     - 2*params.l2*thetad*(s+params.l5) * sin(phi-theta))) / N^2;
+
 
 
 end
