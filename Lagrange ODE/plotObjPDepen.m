@@ -32,21 +32,28 @@ block_name = {'Mass', 'Inertia', 'Friction'};
         figure;
         for i=ka:kb
             obj = @(p_i) obj_i(p_i,i);
-            p_i = linspace((1-d)*p_opt(i),(1+d)*p_opt(i),10);
+            p_i = linspace((1-d)*p_opt(i),(1+d)*p_opt(i),50);
             y = zeros(length(p_i),1);
             for j=1:length(p_i)
                 y(j) = obj(p_i(j));
             end
             subplot(m,n,i-ka+1);
             plot(p_i,y);
-            title(p_name(i),'interpreter','latex');
+            hold on;
+            % reference point of optimal value
+            plot(p_opt(i),objFct(p_opt),'Marker','o','MarkerEdgeColor','blue','MarkerFaceColor','blue');
+            title(p_name(i),'interpreter','latex','FontSize',20);
+            grid on;
         end
     end
 
-plotParamBlock(1,2,1,2,1);
-plotParamBlock(2,2,3,6,2);
-plotParamBlock(2,2,7,10,3);
+%plotParamBlock(1,2,1,2,1);
+%plotParamBlock(2,2,3,6,2);
+%plotParamBlock(2,2,7,10,3);
 
+plotParamBlock(1,1,1,1,1);
+plotParamBlock(1,1,3,3,1);
+plotParamBlock(1,1,7,7,1);
 
 %{
 figure;

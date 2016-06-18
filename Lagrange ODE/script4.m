@@ -9,22 +9,19 @@ initiateParameters;
 
 %%
 % ODE is to be solved on the intervall [0,T]
-T = 1;
+T = 10;
 t_span = [0,T];
 
 %%
 % initial value of [s,theta,sd,thetad]
-x_0 = [3; -pi/8; 0; 0];
+x_0 = [3; -pi/4; 0; 0];
 
 %%
 % torques defined as piecewise constant functions
 % Later, in Discretization, use supporting points
-
-u1 = [  -10000;
-        -10000;
-        -10000];
-u2 = [  -10000;
-        -10000;
+u1 = [  -30000;
+        -27000];
+u2 = [  -9000;
         -10000];
 tau_B1 = piecwConst(u1,T);
 tau_B2 = piecwConst(u2,T);
