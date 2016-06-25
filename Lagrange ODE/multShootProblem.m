@@ -79,6 +79,7 @@ u = [tau_B1_val(:)';
 Nx = 4*(N+1);
 Np = 10;
 
+%{
     function [f,g] = objFctFct(z)
         % Tracking type objective function, with derivative if requested
         % z = (x,p)
@@ -97,16 +98,50 @@ Np = 10;
             g(1:Nx) = -(x_opt_vect - z(1:Nx));
         end
     end
+%}
+    function [f,g] = objFctFct(z)
+        % Tracking type objective function, with derivative if requested
+        % z = (x,p)
+        % x = [s0,θ0,sd0,θd0,s1,θ1,sd1,θd1,...]
+        % only compare s and θ
+        % f     = 1/2 |x_opt - x|^2
+        % f_dx  = -(x_opt - x)
+        % f_dp  = 0
+
+        if nargout < 2
+            f = 0.5*norm(x_opt_vect(1:4:end) - z(1:4:Nx),2)^2 + ...
+                0.5*norm(x_opt_vect(2:4:end) - z(2:4:Nx),2)^2;
+
+        end
+
+        if nargout >= 2
+            f = 0.5*norm(x_opt_vect(1:4:end) - z(1:4:Nx),2)^2 + ...
+                0.5*norm(x_opt_vect(2:4:end) - z(2:4:Nx),2)^2;
+            g = zeros(Nx+Np,1);
+            g(1:4:Nx) = -(x_opt_vect(1:4:end) - z(1:4:Nx));
+            g(2:4:Nx) = -(x_opt_vect(2:4:end) - z(2:4:Nx));
+        end
+    end
+
 
 
     function [c,ceq,GC,GCeq] = constrFctFct(z)
-        % Constraint function for multiple shooting
+        % Constraint function for multiple shooting using explicit Euler
         % z = (x,p)
+        % x_n = [s_n,θ_n,sd_n,θd_n]
+        %
+        % c  <= 0 :
+        % -p                           <= 0
+        %
+        % ceq = 0 :
+        % x_0 - x_0_given               = 0
+        % x_{n+1} - x_n - h*rhs(x_n,p)  = 0
         currparams = pToParams(z(Nx+1:end),params);
 
         % inequality constraint for parameters, c<=0
         c = -z(1+Nx:end);
-        GC = zeros(Nx+Np,Np);
+        %GC = zeros(Nx+Np,Np);
+        GC = sparse(Nx+Np,Np);
         GC(1+Nx:end,:) = -eye(Np);
 
         % equality constraint from multiple shooting
@@ -115,30 +150,36 @@ Np = 10;
         ceq(1:4) = z(1:4) - x_0(:);
 
         if nargout <= 2
+            % no derivative information
             for i=0:N-1
-                % x_{n+1} = approx(x_n,p) = x_n + h*rhs(x_n,p)
-                % x_0 has indizes 1, ..., 4
-                % x_n has indizes 1+4*i, ..., 4*(i+1)
+                % x_{n+1} - x_n - h*rhs(x_n,p)  = 0
+                % x_0     has indizes 1, ..., 4
+                % x_n     has indizes 1+4*i    , ..., 4*(i+1)
+                % x_{n+1} has indizes 1+4*(i+1), ..., 4*(i+2)
                 rhs = rhsODE(z(1+4*i:4*(i+1)),u(:,i+1),currparams);
                 ceq(1+4*(i+1):4*(i+2)) = z(1+4*(i+1):4*(i+2)) - z(1+4*i:4*(i+1)) - mesh(i+1)*rhs;
             end
         end
-        
+
         if nargout >=3
+            % provide derivative information
             %GCeq = zeros(Nx+Np,Nx);
             GCeq = sparse(Nx+Np,Nx);
             GCeq(1:4,1:4) = eye(4);
             for i=0:N-1
-                % x_{n+1} = approx(x_n,p) = x_n + h*rhs(x_n,p)
-                % x_0 has indizes 1, ..., 4
-                % x_n has indizes 1+4*i, ..., 4*(i+1)
+                % x_{n+1} - x_n - h*rhs(x_n,p)  = 0
+                % x_0     has indizes 1, ..., 4
+                % x_n     has indizes 1+4*i    , ..., 4*(i+1)
+                % x_{n+1} has indizes 1+4*(i+1), ..., 4*(i+2)
                 [rhs,rhs_dp,rhs_dx] = rhsODE(z(1+4*i:4*(i+1)),u(:,i+1),currparams);
                 ceq(1+4*(i+1):4*(i+2)) = z(1+4*(i+1):4*(i+2)) - z(1+4*i:4*(i+1)) - mesh(i+1)*rhs;
 
                 % deriving x_{n+1} part
                 GCeq(1+4*(i+1):4*(i+2),1+4*(i+1):4*(i+2)) = eye(4);
+
                 % deriving -x_n -h*rhs part w.r.t. x
                 GCeq(1+4*i:4*(i+1),1+4*(i+1):4*(i+2)) = -eye(4) -mesh(i+1)*rhs_dx';
+
                 % deriving -x_n -h*rhs part w.r.t. p
                 GCeq(Nx+1:end,1+4*(i+1):4*(i+2)) = -mesh(i+1)*rhs_dp';
             end
