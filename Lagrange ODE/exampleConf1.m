@@ -1,4 +1,4 @@
-function [ objFct ] = exampleConf1(params, N, rkOrder)
+function [ objFct ] = exampleConf1(params, N, rkOrder, ref)
 % Example configuration 1
 % Input:
 %   params      optimal parameters
@@ -8,6 +8,9 @@ function [ objFct ] = exampleConf1(params, N, rkOrder)
 %               2: RK of 2nd order
 %               3: RK of 3nd order / Simpson's rule
 %               4: RK of 4nd order
+%   ref        index for reference for comparing x(p) with
+%               1: x_opt
+%               2: x(p_opt)
 % Output:
 %   objFct      objective function for this problem
 %
@@ -101,9 +104,14 @@ approxFct = chooseApprox(fix_params,x_opt,u,mesh,rkOrder);
 % Compare approximation from p to optimal approximation
 % 
 % |x_opt - x(p_opt)| gives an approximation error.
-% To avoid this error in the objective function, 
+% To avoid this error in the objective function, one may
 % use |x(p_opt) - x(p)| as the difference of the approximations
-objFct = trackingTypeFct(approxFct(p_opt), approxFct);
+if ref == 1
+    x_ref = x_opt;
+else
+    x_ref = approxFct(p_opt);
+end
+objFct = trackingTypeFct(x_ref, approxFct);
 
 
 

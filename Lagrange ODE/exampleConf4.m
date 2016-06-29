@@ -1,5 +1,5 @@
-function [ objFct ] = exampleConf2(params, N, rkOrder, ref)
-% Example configuration 2
+function [ objFct, x_opt, trajForP ] = exampleConf4(params, N, rkOrder, ref)
+% Example configuration 1
 % Input:
 %   params      optimal parameters
 %   N           number of time steps in discretization
@@ -13,6 +13,8 @@ function [ objFct ] = exampleConf2(params, N, rkOrder, ref)
 %               2: x(p_opt)
 % Output:
 %   objFct      objective function for this problem
+%   x_opt       reference trajectory
+%   trajForP    function to calculate a trajectory for given p
 %
 % The parameters come from initiateParameters and are thus fixed
 
@@ -27,21 +29,19 @@ fix_params = nonOptParams(params);
 
 %%
 % ODE is to be solved on the intervall [0,T]
-T = 1;
+T = 10;
 t_span = [0,T];
 
 %%
 % initial value of [s,theta,sd,thetad]
-x_0 = [4; -pi/6; 0; 0];
+x_0 = [3; -pi/4; 0; 0];
 
 %%
 % torques defined as piecewise constant functions
 % Later, in Discretization, use supporting points
-u1 = [  -50000;
-        -15000;
-        -10000];
-u2 = [  -50000;
-        -10000;
+u1 = [  -30000;
+        -27000];
+u2 = [  -9000;
         -10000];
 tau_B1 = piecwConst(u1,T);
 tau_B2 = piecwConst(u2,T);
@@ -95,6 +95,21 @@ else
 end
 objFct = trackingTypeFct(x_ref, approxFct);
 
+
+%%
+% Trajectory for given p.
+% As this type of problem only approximates p and does not
+% explicitely create a trajectory purely dependent on p,
+% one should also compare a resulting trajectory with the
+% real one.
+    function xp = trajForPFct(p)
+        % Compute a trajectory for given p.
+        pparams = pToParams(p,fix_params);
+        sol_ode_p = solveLagrODE(pparams,x_0,t_span,tau_B1,tau_B2);
+        xp = deval(sol_ode_p,t_pts);
+    end
+
+trajForP = @(p) trajForPFct(p);
 
 
 end

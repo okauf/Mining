@@ -1,30 +1,35 @@
-%function [p,p_opt,p_0,objFct,newObj] = script9(params)
+clear;
+
+initiateParameters;
 p_opt = pFromParams(params);
-%p_0 = ones(10,1);
-p_0 = 0.9*p_opt;
 
-objFct = exampleConf2(params,40,4);
+N = 100;
+rkOrder = 1;
+ref = 1;
+deviation = 0.5;
+instance = [N;rkOrder;ref;deviation];
 
-lb = zeros(size(p_0));
+objFct = exampleConf4(params,N,rkOrder,ref);
+
+lb = zeros(10,1);
 
 options                 = optimoptions('fmincon');
 options.Display         = 'iter';
 options.SpecifyObjectiveGradient = true;
 options.Algorithm       = 'sqp';
+%options.Algorithm       = 'interior-point';
+options.OptimalityTolerance = 1e-10;
 options.StepTolerance   = 1e-10;
-options.CheckGradients  = true;
-options.ScaleProblem    = 'obj-and-constr';
+%options.CheckGradients  = true;
+%options.ScaleProblem    = 'obj-and-constr';    % often not converging
 
-
+for i=1:1
+p_0 = pToRandP(p_opt,deviation);
 [p,fval,exitflag,output] = fmincon(objFct,p_0,[],[],[],[],lb,[],[], options);
-
-%{
-function [f,g] = scaledFct(p)
-    [f,g] = objFct(100*p);
-    g = g*100;
+res(i,:) = [output.iterations;
+            norm(p-p_opt)/norm(p_opt);
+            exitflag]';
 end
-newObj = @(p) scaledFct(p);
 
-p = fmincon(newObj,p_0/100,[],[],[],[],lb,[],[], options);
-%}
-%end
+instance'
+res
