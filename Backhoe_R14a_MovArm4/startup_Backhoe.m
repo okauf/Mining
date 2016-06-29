@@ -26,4 +26,14 @@ Backhoe_Model_PARAM
 Backhoe_Arm
 open('Backhoe_Demo_Script.html')
 
+load('../Lagrange ODE/traj.mat');
+
+s = -s;
+sd = -sd;
+sdd = -sdd;
+
+theta = -theta - pi/4;
+thetad = -thetad;
+thetadd = -thetadd;
+
 
