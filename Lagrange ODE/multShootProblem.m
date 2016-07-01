@@ -1,4 +1,4 @@
-function [ objFct, constrFct, x_opt_vect ] = multShootProblem(params, N)
+function [ objFct, constrFct, x_opt_vect, z_0 ] = multShootProblem(params, p_0, N)
 % Multiple Shooting example problem setting
 % Input:
 %   params      optimal parameters
@@ -22,23 +22,80 @@ function [ objFct, constrFct, x_opt_vect ] = multShootProblem(params, N)
 % actual parameters, corresponding to the actual state
 p_opt = pFromParams(params);
 fix_params = nonOptParams(params);
+start_params = pToParams(p_0,fix_params);
 
 %%
 % ODE is to be solved on the intervall [0,T]
-T = 10;
+T = 14;
 t_span = [0,T];
 
 %%
 % initial value of [s,theta,sd,thetad]
-x_0 = [3; -pi/4; 0; 0];
+x_0 = [1; -pi*0.7/2; 0; 0];
 
 %%
 % torques defined as piecewise constant functions
 % Later, in Discretization, use supporting points
-u1 = [  -30000;
-        -27000];
-u2 = [  -9000;
-        -10000];
+u1 = [  -15000;
+        -15000;
+        -25000;
+        -25000;
+        -30000;
+        -30000;
+        -30000;
+        -30000;
+        -30000;
+        -25000;
+        -30000;
+        -30000;
+        -20000;
+        -20000;
+        -20000;
+        -20000;
+        -20000;
+        -20000;
+        -20000;
+        -20000;
+        -15000;
+        -15000;
+        -10000;
+        -15000;
+        -15000;
+        -15000;
+        -15000;
+        -20000;
+        -20000;
+        -20000];
+u2 = [  -15000;
+        -20000;
+        -20000;
+        -10000;
+        -10000;
+        -10000;
+        -10000;
+        -10000;
+        -15000;
+        -15000;
+        -20000;
+        -15000;
+        -10000;
+        -12000;
+        -12000;
+        -12000;
+        -12000;
+        -12000;
+        -6000;
+        -7000;
+        -8000;
+        -9000;
+        -15000;
+        -20000;
+        -25000;
+        -30000;
+        -30000;
+        -30000];
+
+
 tau_B1 = piecwConst(u1,T);
 tau_B2 = piecwConst(u2,T);
 
@@ -79,7 +136,6 @@ u = [tau_B1_val(:)';
 Nx = 4*(N+1);
 Np = 10;
 
-%{
     function [f,g] = objFctFct(z)
         % Tracking type objective function, with derivative if requested
         % z = (x,p)
@@ -98,7 +154,8 @@ Np = 10;
             g(1:Nx) = -(x_opt_vect - z(1:Nx));
         end
     end
-%}
+
+    %{
     function [f,g] = objFctFct(z)
         % Tracking type objective function, with derivative if requested
         % z = (x,p)
@@ -122,6 +179,7 @@ Np = 10;
             g(2:4:Nx) = -(x_opt_vect(2:4:end) - z(2:4:Nx));
         end
     end
+    %}
 
 
 
@@ -211,5 +269,10 @@ objFct = trackingTypeFct(x_ref, approxFct);
 objFct = @(z) objFctFct(z);
 constrFct = @(z) constrFctFct(z);
 
+% initial starting point
+% use provided p_0, calculate x by forward Euler solution of ODE
+x = forwEuler(start_params,x_0,u,mesh);
+x_start_vect = x(:);
+z_0 = [x_start_vect;p_0];
 
 end
