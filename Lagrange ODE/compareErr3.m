@@ -10,12 +10,12 @@ function [ absErr, relErr, absSTErr, relSTErr, fctVal, p_0, maxsdiff, maxtdiff ]
 p_opt = pFromParams(params);
 
 % deviation
-dev = 0.3;
+dev = 0.1;
 
-exampleConf = @(a,b,c) exampleConf4(a,b,c,1); % always x_opt as reference
+exampleConf = @(a,b,c) exampleConf5(a,b,c,1); % always x_opt as reference
 lb = zeros(10,1);
 rkOrder = [1];
-N = 1000;       % number of discretization time steps
+N = 1500;       % number of discretization time steps
 K = 1000;       % scaling of the objective function
 descr = 'result{alg,rkOrder,iter}';
 algorithm = {'interior-point','sqp'};
@@ -23,10 +23,10 @@ algorithm = {'interior-point','sqp'};
 %%
 % Setup of the solvers, algorithm is set later
 options                             = optimoptions('fmincon');
-%options.Display                     = 'iter';
+options.Display                     = 'iter';
 options.SpecifyObjectiveGradient    = true;
-options.OptimalityTolerance         = 1e-10;
-options.StepTolerance               = 1e-10;
+options.OptimalityTolerance         = 1e-14;
+options.StepTolerance               = 1e-14;
 options.OutputFcn                   = @outfun;
 
 
@@ -40,18 +40,46 @@ for a=1:length(algorithm)
 
         % create test instance
         [objFct, x_ref, trajForP] = exampleConf(params,N,rkOrder(r));
-        scaledObjFct = rescaleObjFct(objFct,K);
+        objFct1 = exampleConf1(params,N,rkOrder(r),1);
+        objFct2 = exampleConf2(params,N,rkOrder(r),1);
+        objFct3 = exampleConf3(params,N,rkOrder(r),1);
+        objFct4 = exampleConf4(params,N,rkOrder(r),1);
+        combinedObjFct = combineObjFcts({objFct,objFct1,objFct2,objFct3,objFct4});
+        scaledObjFct = rescaleObjFct(combinedObjFct,K);
+        %scaledObjFct = rescaleObjFct(objFct,K);
 
         % solve
         tic;
         [p,fval,exitflag,output] = fmincon(scaledObjFct,p_0,[],[],[],[],lb,[],[], options);
         toc;
+
+        % the results from the last iteration are not yet added to the results
+        % do it manually
+        optimValues.iteration = output.iterations;  % only value needed
+        state = 0;                                  % not needed
+        outfun(p,optimValues,state);
     end
 end
 
 if nargin >= 2
     try
-        save(filename,'absErr','relErr','absSTErr','relSTErr','fctVal','p_0','maxsdiff','maxtdiff');
+        % also save the starting trajectory, optimized trajectory and reference trajectory
+        % save in three separate files each corresponding s,sd,sdd, θ,θd,θdd
+        % First: x_comp
+        [x_comp,s,sd,sdd,theta,thetad,thetadd,t]  = trajForP(p);
+        save('data/traj_x_comp.mat','x_comp','p','s','sd','sdd','theta','thetad','thetadd','t');
+
+        % Second: x_p0
+        [x_p0,s,sd,sdd,theta,thetad,thetadd,t]    = trajForP(p_0);
+        save('data/traj_x_p0.mat','x_p0','p_0','s','sd','sdd','theta','thetad','thetadd','t');
+
+
+        % Third: x_ref
+        [x_ref,s,sd,sdd,theta,thetad,thetadd,t]    = trajForP(p_opt);
+        save('data/traj_x_ref.mat','x_ref','p_opt','s','sd','sdd','theta','thetad','thetadd','t');
+
+
+        save(filename,'absErr','relErr','absSTErr','relSTErr','fctVal','p_0','p','maxsdiff','maxtdiff');
     catch
         disp('failed to save results');
     end
@@ -93,6 +121,7 @@ end
         fctVal(a,r,iter)    = objFct(p);
         maxsdiff(a,r,iter)  = max(abs(x_ref_v(1:(N+1)) - trajP_v(1:(N+1))));
         maxtdiff(a,r,iter)  = max(abs(x_ref_v((N+2):2*(N+1)) - trajP_v((N+2):2*(N+1))));
+        disp(num2str(maxsdiff(a,r,iter)));
     end
 
 

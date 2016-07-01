@@ -6,7 +6,7 @@ clear params;
 % size of excavator
 
 % [m]
-params.l1 = 7; % length from A to C
+params.l1 = 9; % length from A to C
 params.l2 = 5; %length from C to D
 params.l3 = params.l1 + params.l2;
 params.l4 = 10; %length of movable excavator arm
